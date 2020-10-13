@@ -1,5 +1,5 @@
 import numpy as np
-import NeuralNetwork as nn
+import NeuralNetworkEdited as nn
 import matplotlib.pyplot as plt
 
 #load the data from txt file
@@ -151,21 +151,23 @@ learningDataOutputs=learningData[:, 6:7].T
 number_of_iterations = 10000
 learning_rate = 0.01
 
-#create the 
+#set the number of inputs,outputs and neurons in hidden layer
+hiddenLayer=20
+numberInputs=6
+numberOfOutputs=1
+
+#create the cost and iteration array
+costArray=np.empty(number_of_iterations+1)
+iterArray=np.empty(number_of_iterations+1)
 
 #get the piece of testing data without the output value of each row
 testingDataNew1=testingData[:, 0:6]
 
 #get the model for the predictions
-model=nn.model(learningDataInputs,learningDataOutputs,6,3,1,number_of_iterations,learning_rate)
+model=nn.model(learningDataInputs,learningDataOutputs,numberInputs,hiddenLayer,numberOfOutputs,number_of_iterations,learning_rate,costArray,iterArray)
 
 #get the predictions with 6 inputs
 predictions=makePredictions(testingDataNew1,model,6)
-
-#Print the results
-for i in range(0,testingData.shape[0]):
-    print("Neural Network prediction for example:","["+str(testingData[i][0]), testingData[i][1], testingData[i][2],
-    testingData[i][3], testingData[i][4], str(testingData[i][5])+"]","is: ["+str(int(predictions[i][0]))+str(int(predictions[i][1]))+"]")
 
 #get the confusion matrix with the labels 0 and 1
 confusionMatrix=completeConfusionMatrix(predictions,testingData,0.0,1.0)
@@ -173,6 +175,11 @@ confusionMatrix=completeConfusionMatrix(predictions,testingData,0.0,1.0)
 #calculate the recall and precision values for the confusion matrix
 recallValues=calculateRecall(confusionMatrix,2)
 precisionValues=calculatePrecision(confusionMatrix,2)
+
+#Print the results
+for i in range(0,testingData.shape[0]):
+    print("Neural Network prediction for example:","["+str(testingData[i][0]), testingData[i][1], testingData[i][2],
+    testingData[i][3], testingData[i][4], str(testingData[i][5])+"]","is: ["+str(int(predictions[i][0]))+str(int(predictions[i][1]))+"]")
 
 #print the confusion matrix
 print("Confusion matrix:","\n",confusionMatrix)
@@ -189,14 +196,9 @@ sizes = [confusionMatrix[0][0],confusionMatrix[0][1],confusionMatrix[1][0],confu
 plt.pie(sizes,labels=labels1)
 plt.show()
 
-#plot the cost chart
-labels2 = 'True Negative', 'False Negative', 'False Positive','True Positive'
-sizes = [confusionMatrix[0][0],confusionMatrix[0][1],confusionMatrix[1][0],confusionMatrix[1][1]]
-plt.pie(sizes,labels=labels1)
+#chart the cost vs iterations
+plt.plot(iterArray,costArray)
+plt.title('Cost vs iterations')
+plt.xlabel('iteration')
+plt.ylabel('cost')
 plt.show()
-
-
-
-
-
-
